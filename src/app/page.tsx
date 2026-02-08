@@ -2,11 +2,9 @@
 
 import { useState, useMemo } from 'react';
 
-const SALARIO_MINIMO = 1518; // 2025
+const SALARIO_MINIMO = 1518;
 const LIMITE_ANUAL_MEI = 81000;
-const LIMITE_MENSAL_MEI = LIMITE_ANUAL_MEI / 12;
 
-// DAS values 2025
 const DAS_COMERCIO = 75.90;
 const DAS_SERVICO = 80.90;
 const DAS_COMERCIO_SERVICO = 81.90;
@@ -34,7 +32,6 @@ export default function Home() {
     const dentroDoLimite = faturamentoAnual <= LIMITE_ANUAL_MEI;
     const percentualUsado = faturamentoAnual / LIMITE_ANUAL_MEI;
 
-    // DAS based on activity type
     let dasValor = DAS_SERVICO;
     if (tipoAtividade === 'comercio') dasValor = DAS_COMERCIO;
     if (tipoAtividade === 'ambos') dasValor = DAS_COMERCIO_SERVICO;
@@ -42,16 +39,9 @@ export default function Home() {
     const dasAnual = dasValor * 12;
     const cargaTributaria = (dasAnual / faturamentoAnual) * 100;
 
-    // Simples Nacional comparison (rough estimate)
-    const simplesAnexoIII = faturamentoAnual * 0.06; // ~6% for services
-    const simplesAnexoI = faturamentoAnual * 0.04; // ~4% for commerce
+    const simplesAnexoIII = faturamentoAnual * 0.06;
+    const simplesAnexoI = faturamentoAnual * 0.04;
 
-    // CLT comparison
-    const inssPatronal = faturamentoNum * 0.20;
-    const fgts = faturamentoNum * 0.08;
-    const custoCLT = faturamentoNum + inssPatronal + fgts;
-
-    // Autonomo PF
     const irpfEstimado = faturamentoNum > 4664.68 
       ? faturamentoNum * 0.275 - 884.96 
       : faturamentoNum > 2826.65 
@@ -68,7 +58,6 @@ export default function Home() {
       dasAnual,
       cargaTributaria,
       simplesAnual: tipoAtividade === 'comercio' ? simplesAnexoI : simplesAnexoIII,
-      custoCLT,
       custoAutonomo: irpfEstimado + inssAutonomo,
       lucroLiquidoMEI: faturamentoNum - dasValor,
       lucroLiquidoAutonomo: faturamentoNum - irpfEstimado - inssAutonomo,
@@ -86,34 +75,45 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
-      {/* Header */}
-      <div className="bg-emerald-600 text-white py-8 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">
-            🧮 Calculadora MEI 2025
-          </h1>
-          <p className="text-emerald-100 text-lg">
-            Descubra se vale a pena abrir um MEI e quanto você vai pagar de imposto
-          </p>
-        </div>
+    <main className="min-h-screen bg-[#0a0f0d] text-white overflow-hidden relative">
+      {/* Ambient Background */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[150px]" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px]" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+CjxyZWN0IHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgZmlsbD0iIzBhMGYwZCI+PC9yZWN0Pgo8Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIxIiBmaWxsPSIjMWExZjFkIj48L2NpcmNsZT4KPC9zdmc+')] opacity-40" />
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Calculator Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8">
-          <h2 className="text-xl font-semibold text-gray-800 mb-6">
-            Simule seu faturamento
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Input */}
+      {/* Header */}
+      <header className="relative z-10 pt-16 pb-12 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-2xl shadow-lg shadow-emerald-500/25">
+              📊
+            </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Faturamento mensal estimado
+              <p className="text-emerald-400 text-sm font-medium tracking-wider uppercase">Simulador Gratuito</p>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+                Calculadora <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-amber-400">MEI 2025</span>
+              </h1>
+            </div>
+          </div>
+          <p className="text-white/50 text-lg max-w-xl">
+            Descubra se vale a pena abrir um MEI e simule seus impostos em segundos.
+          </p>
+        </div>
+      </header>
+
+      <div className="relative z-10 max-w-4xl mx-auto px-6 pb-20">
+        {/* Input Card */}
+        <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-8 mb-8 shadow-2xl">
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Faturamento Input */}
+            <div>
+              <label className="block text-white/40 text-sm font-medium mb-3 tracking-wide uppercase">
+                Faturamento Mensal
               </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
+              <div className="relative group">
+                <span className="absolute left-5 top-1/2 -translate-y-1/2 text-emerald-400 text-xl font-semibold">
                   R$
                 </span>
                 <input
@@ -121,43 +121,45 @@ export default function Home() {
                   value={faturamento}
                   onChange={handleFaturamentoChange}
                   placeholder="0,00"
-                  className="w-full pl-12 pr-4 py-4 text-2xl font-bold border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-0 outline-none transition-colors"
+                  className="w-full pl-14 pr-6 py-5 text-3xl font-bold bg-white/5 border-2 border-white/10 rounded-2xl focus:border-emerald-500/50 focus:bg-white/10 outline-none transition-all duration-300 placeholder:text-white/20"
                 />
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/20 to-amber-500/20 opacity-0 group-focus-within:opacity-100 transition-opacity -z-10 blur-xl" />
               </div>
             </div>
 
-            {/* Activity Type */}
+            {/* Tipo Atividade */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tipo de atividade
+              <label className="block text-white/40 text-sm font-medium mb-3 tracking-wide uppercase">
+                Tipo de Atividade
               </label>
               <div className="space-y-2">
                 {[
-                  { value: 'servico', label: 'Prestação de Serviços', das: DAS_SERVICO },
-                  { value: 'comercio', label: 'Comércio / Indústria', das: DAS_COMERCIO },
-                  { value: 'ambos', label: 'Comércio + Serviços', das: DAS_COMERCIO_SERVICO },
+                  { value: 'servico', label: 'Serviços', das: DAS_SERVICO, icon: '💼' },
+                  { value: 'comercio', label: 'Comércio', das: DAS_COMERCIO, icon: '🏪' },
+                  { value: 'ambos', label: 'Ambos', das: DAS_COMERCIO_SERVICO, icon: '🔄' },
                 ].map((option) => (
                   <label
                     key={option.value}
-                    className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                    className={`flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-300 ${
                       tipoAtividade === option.value
-                        ? 'border-emerald-500 bg-emerald-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'bg-emerald-500/20 border-2 border-emerald-500/50'
+                        : 'bg-white/5 border-2 border-transparent hover:bg-white/10'
                     }`}
                   >
                     <div className="flex items-center gap-3">
+                      <span className="text-xl">{option.icon}</span>
                       <input
                         type="radio"
                         name="tipoAtividade"
                         value={option.value}
                         checked={tipoAtividade === option.value}
                         onChange={(e) => setTipoAtividade(e.target.value as TipoAtividade)}
-                        className="w-4 h-4 text-emerald-600"
+                        className="sr-only"
                       />
                       <span className="font-medium">{option.label}</span>
                     </div>
-                    <span className="text-sm text-gray-500">
-                      DAS: {formatCurrency(option.das)}
+                    <span className="text-white/40 text-sm font-mono">
+                      {formatCurrency(option.das)}/mês
                     </span>
                   </label>
                 ))}
@@ -169,198 +171,176 @@ export default function Home() {
         {/* Results */}
         {resultado && (
           <>
-            {/* Status Card */}
-            <div className={`rounded-2xl shadow-xl p-6 mb-8 ${
+            {/* Status Banner */}
+            <div className={`relative overflow-hidden rounded-3xl p-8 mb-8 ${
               resultado.dentroDoLimite 
-                ? 'bg-gradient-to-r from-emerald-500 to-green-500' 
-                : 'bg-gradient-to-r from-orange-500 to-red-500'
-            } text-white`}>
-              <div className="flex items-center gap-4 mb-4">
-                <div className="text-4xl">
-                  {resultado.dentroDoLimite ? '✅' : '⚠️'}
+                ? 'bg-gradient-to-br from-emerald-600/20 to-emerald-900/20 border border-emerald-500/30' 
+                : 'bg-gradient-to-br from-amber-600/20 to-red-900/20 border border-amber-500/30'
+            }`}>
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+              
+              <div className="relative flex items-start gap-6">
+                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl ${
+                  resultado.dentroDoLimite ? 'bg-emerald-500/30' : 'bg-amber-500/30'
+                }`}>
+                  {resultado.dentroDoLimite ? '✓' : '⚠'}
                 </div>
-                <div>
-                  <h3 className="text-2xl font-bold">
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold mb-2">
                     {resultado.dentroDoLimite 
                       ? 'Você pode ser MEI!' 
-                      : 'Faturamento acima do limite MEI'}
-                  </h3>
-                  <p className="opacity-90">
+                      : 'Acima do limite MEI'}
+                  </h2>
+                  <p className="text-white/60 mb-4">
                     {resultado.dentroDoLimite
-                      ? `Usando ${formatPercent(resultado.percentualUsado)} do limite anual`
-                      : 'Considere abrir uma ME ou EPP no Simples Nacional'}
+                      ? `Usando ${formatPercent(resultado.percentualUsado)} do limite anual de R$ 81.000`
+                      : 'Considere abrir uma ME no Simples Nacional'}
                   </p>
+                  
+                  {resultado.dentroDoLimite && (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {[
+                        { label: 'DAS Mensal', value: formatCurrency(resultado.dasValor) },
+                        { label: 'DAS Anual', value: formatCurrency(resultado.dasAnual) },
+                        { label: 'Carga Tributária', value: `${resultado.cargaTributaria.toFixed(1)}%` },
+                        { label: 'Lucro Líquido', value: formatCurrency(resultado.lucroLiquidoMEI) },
+                      ].map((item) => (
+                        <div key={item.label} className="bg-white/5 rounded-xl p-4">
+                          <p className="text-white/40 text-xs uppercase tracking-wider mb-1">{item.label}</p>
+                          <p className="text-xl font-bold text-emerald-400">{item.value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
-
-              {resultado.dentroDoLimite && (
-                <div className="bg-white/20 rounded-xl p-4 mt-4">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                    <div>
-                      <div className="text-sm opacity-75">DAS Mensal</div>
-                      <div className="text-xl font-bold">{formatCurrency(resultado.dasValor)}</div>
-                    </div>
-                    <div>
-                      <div className="text-sm opacity-75">DAS Anual</div>
-                      <div className="text-xl font-bold">{formatCurrency(resultado.dasAnual)}</div>
-                    </div>
-                    <div>
-                      <div className="text-sm opacity-75">Carga Tributária</div>
-                      <div className="text-xl font-bold">{resultado.cargaTributaria.toFixed(2)}%</div>
-                    </div>
-                    <div>
-                      <div className="text-sm opacity-75">Lucro Líquido</div>
-                      <div className="text-xl font-bold">{formatCurrency(resultado.lucroLiquidoMEI)}</div>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Comparison Table */}
-            <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8">
-              <h3 className="text-xl font-semibold text-gray-800 mb-6">
-                📊 Comparativo de Regimes
-              </h3>
+            <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden mb-8">
+              <div className="p-6 border-b border-white/10">
+                <h3 className="text-xl font-bold">Comparativo de Regimes</h3>
+              </div>
               
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b-2 border-gray-100">
-                      <th className="text-left py-3 px-4">Regime</th>
-                      <th className="text-right py-3 px-4">Imposto/mês</th>
-                      <th className="text-right py-3 px-4">% Faturamento</th>
-                      <th className="text-right py-3 px-4">Líquido/mês</th>
+                    <tr className="border-b border-white/10">
+                      <th className="text-left py-4 px-6 text-white/40 font-medium text-sm uppercase tracking-wider">Regime</th>
+                      <th className="text-right py-4 px-6 text-white/40 font-medium text-sm uppercase tracking-wider">Imposto/mês</th>
+                      <th className="text-right py-4 px-6 text-white/40 font-medium text-sm uppercase tracking-wider">% Fat.</th>
+                      <th className="text-right py-4 px-6 text-white/40 font-medium text-sm uppercase tracking-wider">Líquido</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="border-b border-gray-50 bg-emerald-50">
-                      <td className="py-4 px-4 font-semibold text-emerald-700">
-                        ⭐ MEI
+                    <tr className="bg-emerald-500/10 border-b border-white/5">
+                      <td className="py-5 px-6">
+                        <div className="flex items-center gap-3">
+                          <span className="text-emerald-400">★</span>
+                          <span className="font-semibold">MEI</span>
+                        </div>
                       </td>
-                      <td className="text-right py-4 px-4 font-bold text-emerald-700">
+                      <td className="text-right py-5 px-6 font-mono font-bold text-emerald-400">
                         {formatCurrency(resultado.dasValor)}
                       </td>
-                      <td className="text-right py-4 px-4 text-emerald-700">
+                      <td className="text-right py-5 px-6 font-mono text-emerald-400">
                         {resultado.cargaTributaria.toFixed(1)}%
                       </td>
-                      <td className="text-right py-4 px-4 font-bold text-emerald-700">
+                      <td className="text-right py-5 px-6 font-mono font-bold text-emerald-400">
                         {formatCurrency(resultado.lucroLiquidoMEI)}
                       </td>
                     </tr>
-                    <tr className="border-b border-gray-50">
-                      <td className="py-4 px-4 font-medium">Autônomo (PF)</td>
-                      <td className="text-right py-4 px-4">
+                    <tr className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                      <td className="py-5 px-6 font-medium">Autônomo (PF)</td>
+                      <td className="text-right py-5 px-6 font-mono text-white/70">
                         {formatCurrency(resultado.custoAutonomo)}
                       </td>
-                      <td className="text-right py-4 px-4">
+                      <td className="text-right py-5 px-6 font-mono text-white/70">
                         {((resultado.custoAutonomo / resultado.faturamentoMensal) * 100).toFixed(1)}%
                       </td>
-                      <td className="text-right py-4 px-4">
+                      <td className="text-right py-5 px-6 font-mono text-white/70">
                         {formatCurrency(resultado.lucroLiquidoAutonomo)}
                       </td>
                     </tr>
-                    <tr className="border-b border-gray-50">
-                      <td className="py-4 px-4 font-medium">Simples Nacional</td>
-                      <td className="text-right py-4 px-4">
+                    <tr className="hover:bg-white/5 transition-colors">
+                      <td className="py-5 px-6 font-medium">Simples Nacional</td>
+                      <td className="text-right py-5 px-6 font-mono text-white/70">
                         {formatCurrency(resultado.simplesAnual / 12)}
                       </td>
-                      <td className="text-right py-4 px-4">
+                      <td className="text-right py-5 px-6 font-mono text-white/70">
                         {tipoAtividade === 'comercio' ? '4-6%' : '6-15%'}
                       </td>
-                      <td className="text-right py-4 px-4">
+                      <td className="text-right py-5 px-6 font-mono text-white/70">
                         {formatCurrency(resultado.faturamentoMensal - resultado.simplesAnual / 12)}
                       </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
-
-              <div className="mt-4 p-4 bg-amber-50 rounded-xl text-sm text-amber-800">
-                <strong>⚠️ Atenção:</strong> Os valores do Simples Nacional e Autônomo são estimativas. 
-                Consulte um contador para valores exatos.
-              </div>
             </div>
 
-            {/* Info Cards */}
+            {/* Info Grid */}
             <div className="grid md:grid-cols-2 gap-6 mb-8">
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                  <span className="text-2xl">📋</span> O que o MEI inclui
-                </h4>
-                <ul className="space-y-2 text-gray-600">
-                  <li className="flex items-center gap-2">
-                    <span className="text-emerald-500">✓</span> CNPJ para emitir nota fiscal
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-emerald-500">✓</span> Aposentadoria por idade (INSS)
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-emerald-500">✓</span> Auxílio-doença
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-emerald-500">✓</span> Salário-maternidade
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-emerald-500">✓</span> Conta PJ e acesso a crédito
-                  </li>
+              <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-xl">📋</div>
+                  <h4 className="font-bold text-lg">Benefícios do MEI</h4>
+                </div>
+                <ul className="space-y-3">
+                  {[
+                    'CNPJ para emitir nota fiscal',
+                    'Aposentadoria por idade',
+                    'Auxílio-doença',
+                    'Salário-maternidade',
+                    'Conta PJ e acesso a crédito',
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-3 text-white/70">
+                      <span className="text-emerald-400 text-sm">✓</span>
+                      {item}
+                    </li>
+                  ))}
                 </ul>
               </div>
 
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                  <span className="text-2xl">⚡</span> Limites do MEI 2025
-                </h4>
-                <ul className="space-y-2 text-gray-600">
-                  <li className="flex items-center gap-2">
-                    <span className="text-blue-500">•</span> Faturamento: até R$ 81.000/ano
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-blue-500">•</span> Máximo 1 funcionário
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-blue-500">•</span> Não pode ser sócio de outra empresa
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-blue-500">•</span> Atividade deve estar na lista permitida
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-blue-500">•</span> Profissões regulamentadas não podem
-                  </li>
+              <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-xl">⚡</div>
+                  <h4 className="font-bold text-lg">Limites 2025</h4>
+                </div>
+                <ul className="space-y-3">
+                  {[
+                    'Faturamento: até R$ 81.000/ano',
+                    'Máximo 1 funcionário',
+                    'Não pode ser sócio de outra empresa',
+                    'Atividade na lista permitida',
+                    'Profissões regulamentadas: não',
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-3 text-white/70">
+                      <span className="text-amber-400 text-sm">•</span>
+                      {item}
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
           </>
         )}
 
-        {/* CTA */}
-        <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl shadow-xl p-8 text-white text-center">
-          <h3 className="text-2xl font-bold mb-3">
-            📊 Quer organizar suas finanças como MEI?
-          </h3>
-          <p className="text-purple-100 mb-6 max-w-xl mx-auto">
-            Tenho planilhas e templates prontos para controle financeiro, 
-            emissão de recibos e gestão do seu negócio.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <a
-              href="https://curva-abc-app.vercel.app"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-white text-purple-600 px-6 py-3 rounded-xl font-semibold hover:bg-purple-50 transition-colors"
-            >
-              🎯 Curva ABC Online
-            </a>
+        {/* Empty State */}
+        {!resultado && (
+          <div className="text-center py-20">
+            <div className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-emerald-500/20 to-amber-500/20 flex items-center justify-center text-5xl">
+              💡
+            </div>
+            <h3 className="text-xl font-bold mb-2 text-white/70">Digite seu faturamento</h3>
+            <p className="text-white/40">Veja instantaneamente se o MEI é ideal para você</p>
           </div>
-        </div>
+        )}
 
         {/* Footer */}
-        <footer className="mt-12 text-center text-gray-500 text-sm">
-          <p>
-            Calculadora MEI © 2025 • Valores atualizados para 2025
-          </p>
-          <p className="mt-1">
-            Esta ferramenta é informativa. Consulte um contador para decisões fiscais.
+        <footer className="text-center pt-12 border-t border-white/10">
+          <p className="text-white/30 text-sm">
+            Calculadora MEI 2025 • Valores atualizados • Consulte um contador para decisões fiscais
           </p>
         </footer>
       </div>
