@@ -5,9 +5,9 @@ import { useState, useMemo } from 'react';
 const SALARIO_MINIMO = 1518;
 const LIMITE_ANUAL_MEI = 81000;
 
-const DAS_COMERCIO = 75.90;
-const DAS_SERVICO = 80.90;
-const DAS_COMERCIO_SERVICO = 81.90;
+const DAS_COMERCIO = 76.90;       // INSS R$75,90 + ICMS R$1,00
+const DAS_SERVICO = 80.90;        // INSS R$75,90 + ISS R$5,00
+const DAS_COMERCIO_SERVICO = 81.90; // INSS R$75,90 + ICMS R$1,00 + ISS R$5,00
 
 type TipoAtividade = 'comercio' | 'servico' | 'ambos';
 
@@ -93,7 +93,7 @@ export default function Home() {
             <div>
               <p className="text-emerald-400 text-sm font-medium tracking-wider uppercase">Simulador Gratuito</p>
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-                Calculadora <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-amber-400">MEI 2025</span>
+                Calculadora <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-amber-400">MEI 2026</span>
               </h1>
             </div>
           </div>
@@ -305,7 +305,7 @@ export default function Home() {
               <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center text-xl">⚡</div>
-                  <h4 className="font-bold text-lg">Limites 2025</h4>
+                  <h4 className="font-bold text-lg">Limites 2026</h4>
                 </div>
                 <ul className="space-y-3">
                   {[
@@ -340,7 +340,7 @@ export default function Home() {
         {/* Footer */}
         <footer className="text-center pt-12 border-t border-white/10">
           <p className="text-white/30 text-sm">
-            Calculadora MEI 2025 • Valores atualizados • Consulte um contador para decisões fiscais
+            Calculadora MEI 2026 • Valores atualizados • Consulte um contador para decisões fiscais
           </p>
         </footer>
       </div>
